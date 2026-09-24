@@ -1,18 +1,18 @@
-import userModel from "./../models/userModels";
+import userModel from "./../models/userModels.js";
 
 import jwt from "jsonwebtoken";
-import bycrypt from "bycrypt"
+import bcrypt from "bcryptjs"
 import validator from "validator"
 
 //LOGIN FUNCTION
-const loginUser = (req, res) => {
+const loginUser = async(req, res) => {
   const { email, password } = req.body;
   try {
     const user = await userModel.findOne({email})
     if(!user){
         return res.json({success:false, message : "User Doesn't Exist"})
     }
-  const isMatch = await bycrypt.compare(password, user.password)
+  const isMatch = await bcrypt.compare(password, user.password)
   if(!isMatch){
     return res.json ({success: false, message:"Invalid Creds" })
   }
@@ -51,8 +51,8 @@ if(password.length < 8 ) {
     return res.json({success: false, message:"Please Enter a Strong Password" })
 }
 // If Evrthing Works 
-const salt = await bycrypt.genSalt(10)
-const hashedPassword = await bycrypt.hash(password, salt )
+const salt = await bcrypt.genSalt(10)
+const hashedPassword = await bcrypt.hash(password, salt )
 
 // NEW USER 
 const newUser = new userModel({
