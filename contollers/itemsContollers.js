@@ -44,9 +44,12 @@ next(err)
 export const deleteItem = async(req,res,next)=>{
 
   try{
-     const removed = await itemModal.findByIdAnDelete(req.params.id)
-     if(!removed)
+     const removed = await itemModal.findByIdAndDelete(req.params.id)
+     if(!removed)return res.status(404).json({
+      message: "Item not found"
+     })
+     res.status(204).end()
   }catch(err){
-
+  next(err)
   }
 }
