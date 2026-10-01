@@ -3,6 +3,7 @@ import cors from "cors";
 import "dotenv/config";
 import path from "path";
 import { fileURLToPath } from "url";
+import itemRouter from "./routes/itemRoutes.js";
 
 import { connectDb } from "./config/db.js";
 import userRouter from "./routes/userRoute.js";
@@ -40,8 +41,8 @@ connectDb();
 
 // Routes
 app.use("/api/user", userRouter);
+app.use("/api/items",itemRouter)
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
-
 
 
 app.get("/", (req, res) => {

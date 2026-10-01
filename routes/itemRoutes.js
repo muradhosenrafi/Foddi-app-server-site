@@ -1,23 +1,29 @@
-import express from "express"
+import express from "express";
+import multer from "multer";
+import path from "path";
+import fs from "fs";
+import { fileURLToPath } from "url";
 
-import multer from "multer"
+import { createItem, getItems, deleteItem } from "../contollers/itemsContollers.js";
 
-import { createItem,getItems,deleteItem} from './../contollers/itemsContollers.js';
+const itemRouter = express.Router();
 
-const itemRouter = express.Router()
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const uploadDir = path.join(__dirname, "..", "uploads");
 
+// Multer doesn't create the folder when destination is a function
+fs.mkdirSync(uploadDir, { recursive: true });
 
-//TYPE HERE MUTER FUNCTION TO STORE
+const storage = multer.diskStorage({
+  destination: (_req, _file, cb) => cb(null, uploadDir),
+  filename: (_req, file, cb) =>
+    cb(null, `${Date.now()}-${file.originalname.replace(/\s+/g, "_")}`),
+});
 
-const Storage = multer.diskStorage({
-    diskStorage: (_res,_file, cb) =>cb(null, "uploads/"),
-    filename:(_req,file,cb)=>cb(null, `${Date.now()}-${file.fileoriginalname}`)
-})
+const upload = multer({ storage });
 
-const upload = multer ({storage})
+itemRouter.post("/", upload.single("image"), createItem);
+itemRouter.get("/", getItems);
+itemRouter.delete("/:id", deleteItem);
 
-itemRouter.post ("/",upload.single("image"), createItem)
-itemRouter.get("/",getItems);
-itemRouter.delete("/:id",deleteItem)
-
-export default itemRouter
+export default itemRouter;
